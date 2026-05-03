@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Agents for Job Seekers — Learning Portal</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f8f9fa; color: #1a1a1a; }
+
+.screen { display: none; padding: 1.5rem; }
+.screen.active { display: block; }
+
+/* ACCESS */
+.access-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.75rem; max-width: 460px; margin: 2rem auto; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+.book-badge { display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid #f0f0f0; }
+.book-icon { width: 44px; height: 44px; background: #e6f7f1; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+.book-title { font-size: 15px; font-weight: 600; color: #111; }
+.book-sub { font-size: 12px; color: #6b7280; margin-top: 2px; }
+.field-label { font-size: 12px; font-weight: 500; color: #374151; margin-bottom: 5px; display: block; }
+.field-input { width: 100%; padding: 9px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 13px; color: #111; outline: none; margin-bottom: 12px; font-family: inherit; background: #fff; transition: border 0.15s; }
+.field-input:focus { border-color: #2563eb; }
+.access-btn { width: 100%; padding: 11px; background: #2563eb; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit; transition: background 0.15s; }
+.access-btn:hover { background: #1d4ed8; }
+.error-msg { font-size: 12px; color: #dc2626; margin-top: 8px; display: none; background: #fef2f2; padding: 8px 10px; border-radius: 6px; }
+.note-box { background: #f9fafb; border-radius: 8px; padding: 0.75rem 1rem; margin-top: 1rem; font-size: 12px; color: #6b7280; line-height: 1.6; }
+
+/* NAV */
+.learn-wrap { max-width: 680px; margin: 0 auto; padding: 1.5rem; }
+.welcome-name { font-size: 13px; color: #6b7280; margin-bottom: 1rem; }
+.welcome-name strong { color: #111; }
+.progress-wrap { height: 4px; background: #e5e7eb; border-radius: 2px; margin-bottom: 1.5rem; }
+.progress-fill { height: 4px; background: #2563eb; border-radius: 2px; transition: width 0.4s; }
+.chapter-nav { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+.ch-btn { padding: 6px 16px; border-radius: 20px; border: 1px solid #d1d5db; font-size: 12px; cursor: pointer; background: #fff; color: #6b7280; font-family: inherit; transition: all 0.15s; }
+.ch-btn.active { background: #eff6ff; color: #2563eb; border-color: #bfdbfe; font-weight: 500; }
+.ch-btn.done { border-color: #6ee7b7; color: #059669; background: #f0fdf4; }
+.ch-btn.locked { opacity: 0.4; cursor: default; }
+
+/* CHAPTER */
+.chapter-panel { display: none; }
+.chapter-panel.active { display: block; }
+.ch-header { margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid #f0f0f0; }
+.ch-num { font-size: 11px; font-weight: 500; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+.ch-title { font-size: 18px; font-weight: 600; color: #111; }
+
+/* INSIGHTS */
+.insight-box { background: #f9fafb; border-radius: 10px; padding: 1rem 1.1rem; margin-bottom: 1.25rem; border: 1px solid #f0f0f0; }
+.insight-label { font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px; }
+.insight-item { display: flex; gap: 10px; font-size: 13px; color: #374151; line-height: 1.65; margin-bottom: 8px; }
+.insight-item:last-child { margin-bottom: 0; }
+.bullet { color: #2563eb; font-weight: 600; flex-shrink: 0; }
+
+/* QUIZ */
+.quiz-label { font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem; margin-top: 1.25rem; }
+.question { margin-bottom: 1.25rem; }
+.q-text { font-size: 13px; font-weight: 500; color: #111; margin-bottom: 10px; line-height: 1.6; }
+.q-options { display: flex; flex-direction: column; gap: 6px; }
+.q-opt { display: flex; align-items: flex-start; gap: 10px; padding: 9px 11px; border: 1px solid #e5e7eb; border-radius: 8px; cursor: pointer; font-size: 12px; color: #374151; line-height: 1.5; transition: all 0.15s; background: #fff; }
+.q-opt:hover { background: #f9fafb; border-color: #d1d5db; }
+.q-opt.selected { border-color: #bfdbfe; background: #eff6ff; color: #1d4ed8; }
+.q-opt.correct { border-color: #6ee7b7; background: #f0fdf4; color: #065f46; }
+.q-opt.wrong { border-color: #fca5a5; background: #fef2f2; color: #b91c1c; }
+.opt-letter { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid currentColor; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; flex-shrink: 0; margin-top: 0; }
+.feedback { font-size: 12px; margin-top: 8px; padding: 8px 11px; border-radius: 7px; display: none; line-height: 1.55; }
+.feedback.show { display: block; }
+.feedback.ok { background: #f0fdf4; color: #065f46; border-left: 3px solid #34d399; }
+.feedback.bad { background: #fef2f2; color: #b91c1c; border-left: 3px solid #f87171; }
+.submit-btn { margin-top: 0.75rem; padding: 9px 22px; background: #2563eb; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: inherit; transition: background 0.15s; }
+.submit-btn:hover:not(:disabled) { background: #1d4ed8; }
+.submit-btn:disabled { opacity: 0.35; cursor: default; }
+.score-bar { margin-top: 1rem; background: #f9fafb; border-radius: 8px; padding: 0.85rem 1rem; font-size: 13px; color: #374151; display: none; border: 1px solid #f0f0f0; }
+.next-ch-btn { margin-top: 0.6rem; margin-left: 8px; padding: 9px 18px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 13px; cursor: pointer; background: #fff; color: #374151; font-family: inherit; display: none; transition: background 0.15s; }
+.next-ch-btn:hover { background: #f9fafb; }
+
+/* COMPLETE */
+.complete-wrap { text-align: center; padding: 3rem 1rem; }
+.complete-wrap .emoji { font-size: 56px; margin-bottom: 1rem; }
+.complete-title { font-size: 22px; font-weight: 600; color: #111; margin-bottom: 0.5rem; }
+.complete-desc { font-size: 14px; color: #6b7280; line-height: 1.7; max-width: 360px; margin: 0 auto 1.5rem; }
+.score-card { background: #f9fafb; border-radius: 12px; padding: 1.25rem; display: inline-block; min-width: 200px; border: 1px solid #e5e7eb; }
+.score-card .label { font-size: 11px; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+.score-card .num { font-size: 40px; font-weight: 600; color: #2563eb; }
+.score-card .sub { font-size: 12px; color: #6b7280; margin-top: 3px; }
+</style>
+</head>
+<body>
+
+<!-- SCREEN 1: ACCESS -->
+<div class="screen active" id="screen-access">
+  <div class="access-card">
+    <div class="book-badge">
+      <div class="book-icon">📘</div>
+      <div>
+        <div class="book-title">AI Agents for Job Seekers</div>
+        <div class="book-sub">4-Week Learning System &nbsp;·&nbsp; Access Portal</div>
+      </div>
+    </div>
+
+    <label class="field-label">Your Full Name</label>
+    <input class="field-input" id="input-name" type="text" placeholder="e.g. Sarah Johnson">
+
+    <label class="field-label">Your Email Address</label>
+    <input class="field-input" id="input-email" type="email" placeholder="your@email.com">
+
+    <label class="field-label">Book Purchase Code</label>
+    <input class="field-input" id="input-code" type="text" placeholder="AI-XXXXX" style="letter-spacing:0.12em;font-family:monospace;font-size:14px">
+
+    <button class="access-btn" onclick="checkAccess()">Enter Learning System →</button>
+    <div class="error-msg" id="error-msg"></div>
+
+    <div class="note-box">
+      🔒 Each email address can only be registered once. Your progress is linked to your email. The access code is printed on the first page of your purchased ebook.
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 2: LEARNING -->
+<div class="screen" id="screen-learn">
+  <div class="learn-wrap">
+    <div class="welcome-name" id="welcome-name"></div>
+    <div class="progress-wrap"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+    <div class="chapter-nav" id="chapter-nav"></div>
+
+    <!-- Ch 1 -->
+    <div class="chapter-panel active" id="ch1">
+      <div class="ch-header"><div class="ch-num">Chapter 1</div><div class="ch-title">The Rise of AI & A New World of Opportunity</div></div>
+      <div class="insight-box">
+        <div class="insight-label">🔑 Key Insights</div>
+        <div class="insight-item"><span class="bullet">→</span><span>AI is not replacing human talent — it is <strong>amplifying</strong> it. The best professionals learn to work <em>with</em> AI, not compete against it.</span></div>
+        <div class="insight-item"><span class="bullet">→</span><span>A single person with AI tools can now accomplish what once required an entire team — research, content, analysis, and strategy.</span></div>
+        <div class="insight-item"><span class="bullet">→</span><span>Young professionals have a natural advantage: <strong>curiosity and adaptability</strong> — the two most valuable traits in a rapidly changing world.</span></div>
+        <div class="insight-item"><span class="bullet">→</span><span>AI agents are intelligent collaborators that research, generate ideas, automate tasks, and support decision-making.</span></div>
+      </div>
+      <div class="quiz-label">📝 Chapter Quiz — 3 Questions</div>
+      <div id="quiz1"></div>
+      <button class="submit-btn" id="sub1" onclick="submitQuiz(1)" disabled>Submit Answers</button>
+      <button class="next-ch-btn" id="next1" onclick="goChapter(2)">Next Chapter →</button>
+      <div class="score-bar" id="score1"></div>
+    </div>
+
+    <!-- Ch 2 -->
+    <div class="chapter-panel" id="ch2">
+      <div class="ch-header"><div class="ch-num">Chapter 2</div><div class="ch-title">You Don't Need to Be a Programmer</div></div>
+      <div class="insight-box">
+        <div class="insight-label">🔑 Key Insights</div>
+        <div class="insight-item"><span class="bullet">→</span><span>The most important skill today is <strong>clear communication</strong> with AI systems — not programming.</span></div>
+        <div class="insight-item"><span class="bullet">→</span><span>Modern AI tools are conversational and intuitive — you describe what you want, and the AI does it.</span></div>
+        <div class="insight-item"><span class="bullet">→</span><span>Your role becomes <strong>director or strategist</strong>. AI is your assistant. Humans still decide which ideas and opportunities matter.</span></div>
+        <div class="insight-item"><span class="bullet">→</span><span>Sara's case study shows you can help real businesses immediately and build a portfolio — without any technical background.</span></div>
+      </div>
+      <div class="quiz-label">📝 Chapter Quiz — 3 Questions</div>
+      <div id="quiz2"></div>
+      <button class="submit-btn" id="sub2" onclick="submitQuiz(2)" disabled>Submit Answers</button>
+      <button class="next-ch-btn" id="next2" onclick="goChapter(3)">Next Chapter →</button>
+      <div class="score-bar" id="score2"></div>
+    </div>
+
+    <!-- Ch 3 -->
+    <div class="chapter-panel" id="ch3">
+      <div class="ch-header"><div class="ch-num">Chapter 3</div><div class="ch-title">Common Mistakes Beginners Make</div></div>
+      <div class="insight-box">
+        <div class="insight-label">🔑 Key Insights</div>
+        <div class="insight-item"><span class="bullet">→</span><span>The biggest mistake is <strong>waiting until you feel ready</strong>. Imperfect experiments teach you more than passive study.</span></div>
+        <div class="insight-item"><span class="bullet">→</span><span>Treating AI as a search engine wastes its potential — it is a <em>thinking partner</em> for analysis, brainstorming, and creation.</span></div>
+        <div class="insight-item"><span class="bullet">→</span><span>Jumping between too many tools without mastering any is a common trap. Pick one AI tool and go deep first.</span></div>
+        <div class="insight-item"><span class="bullet">→</span><span>AI outputs always need human review and refinement — your judgment is what makes the final result valuable.</span></div>
+      </div>
+      <div class="quiz-label">📝 Chapter Quiz — 3 Questions</div>
+      <div id="quiz3"></div>
+      <button class="submit-btn" id="sub3" onclick="submitQuiz(3)" disabled>Submit Answers</button>
+      <button class="next-ch-btn" id="next3" onclick="goChapter(4)">Next Chapter →</button>
+      <div class="score-bar" id="score3"></div>
+    </div>
+
+    <!-- Ch 4 -->
+    <div class="chapter-panel" id="ch4">
+      <div class="ch-header"><div class="ch-num">Chapter 4</div><div class="ch-title">Learning to Work with AI as Your Mentor</div></div>
+      <div class="insight-box">
+        <div class="insight-label">🔑 Key Insights</div>
+        <div class="insight-item"><span class="bullet">→</span><span>AI can act as a <strong>personal tutor available 24/7</strong> — patient, adaptive, and instantly responsive.</span></div>
+        <div class="insight-item"><span class="bullet">→</span><span>The key is <strong>active dialogue</strong> — push back, ask follow-ups, request examples, and test your own understanding.</span></div>
+        <div class="insight-item"><span class="bullet">→</span><span>Ask AI to quiz you, challenge your ideas, and point out gaps — this turns passive reading into active mastery.</span></div>
+        <div class="insight-item"><span class="bullet">→</span><span>Lina's case study shows consistent AI-assisted learning can compress months of study into just weeks.</span></div>
+      </div>
+      <div class="quiz-label">📝 Chapter Quiz — 3 Questions</div>
+      <div id="quiz4"></div>
+      <button class="submit-btn" id="sub4" onclick="submitQuiz(4)" disabled>Submit Answers</button>
+      <button class="next-ch-btn" id="next4" onclick="goChapter(5)">Next Chapter →</button>
+      <div class="score-bar" id="score4"></div>
+    </div>
+
+    <!-- Ch 5 -->
+    <div class="chapter-panel" id="ch5">
+      <div class="ch-header"><div class="ch-num">Chapter 5</div><div class="ch-title">Essential AI Skills for the Modern Professional</div></div>
+      <div class="insight-box">
+        <div class="insight-label">🔑 Key Insights</div>
+        <div class="insight-item"><span class="bullet">→</span><span>The 5 core skills: <strong>Research, Idea Generation, Content Creation, Problem Solving, Communication</strong> — universal across all industries.</span></div>
+        <div class="insight-item"><span class="bullet">→</span><span>AI-assisted research synthesizes patterns and surfaces insights that manual research would miss.</span></div>
+        <div class="insight-item"><span class="bullet">→</span><span>Content creation with AI is a <em>collaboration</em> — your voice and audience understanding make the output professional.</span></div>
+        <div class="insight-item"><span class="bullet">→</span><span>Alex's case study shows that early AI skills applied to real projects directly open freelance opportunities.</span></div>
+      </div>
+      <div class="quiz-label">📝 Chapter Quiz — 3 Questions</div>
+      <div id="quiz5"></div>
+      <button class="submit-btn" id="sub5" onclick="submitQuiz(5)" disabled>Submit Answers</button>
+      <button class="next-ch-btn" id="next5" onclick="showComplete()">Complete Phase 1 ✓</button>
+      <div class="score-bar" id="score5"></div>
+    </div>
+
+    <!-- Complete -->
+    <div class="chapter-panel" id="ch-complete">
+      <div class="complete-wrap">
+        <div class="emoji">🎓</div>
+        <div class="complete-title">Phase 1 Complete!</div>
+        <div class="complete-desc">You have finished all 5 chapters of the foundational phase. You are now ready for Phase 2: <em>From Zero to AI Monitoring Specialist in 30 Days.</em></div>
+        <div class="score-card">
+          <div class="label">Your Total Score</div>
+          <div class="num" id="total-score-num">—</div>
+          <div class="sub">out of 15 questions</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const VALID_CODE = "AI37345";
+const registeredEmails = new Set();
+
+const quizData = {
+  1: [
+    { q: "According to Chapter 1, what is the primary advantage young professionals have in the age of AI?", opts: ["Advanced technical knowledge", "Curiosity and adaptability", "Access to expensive tools", "University degrees"], ans: 1, exp: "Correct! The book states that curiosity and adaptability are young people's greatest advantages — more valuable than technical credentials." },
+    { q: "What are AI agents described as in Chapter 1?", opts: ["Replacement workers for humans", "Intelligent collaborators that amplify human capability", "Search engines with extra features", "Programming languages for beginners"], ans: 1, exp: "Right! AI agents are 'intelligent collaborators' — they amplify what humans can do, not replace them." },
+    { q: "What does Chapter 1 say about the resources needed to start benefiting from AI?", opts: ["A large budget and technical team", "A computer science degree", "Curiosity, discipline, and willingness to learn", "Expensive enterprise software"], ans: 2, exp: "Exactly. The book is clear: you do not need a large budget — curiosity, discipline, and willingness to learn are enough." }
+  ],
+  2: [
+    { q: "What does Chapter 2 identify as the most important skill for working with AI today?", opts: ["Python programming", "Data science", "Clear communication with intelligent systems", "Cloud computing"], ans: 2, exp: "Correct! 'The most important skill is no longer programming — it is communication with intelligent systems.'" },
+    { q: "How does Chapter 2 describe the professional's role in human-AI collaboration?", opts: ["The human executes what AI decides", "The human becomes a director or strategist, AI is the assistant", "Both are equal and interchangeable", "AI leads, humans support"], ans: 1, exp: "Right! Your role is 'director or strategist' — AI does the work, you provide judgment and direction." },
+    { q: "In Sara's case study, what allowed her to help businesses without technical skills?", opts: ["She learned to code in 2 weeks", "She used AI tools for content and analysis tasks", "She hired a technical co-founder", "She took a 6-month bootcamp"], ans: 1, exp: "Exactly. Sara used AI to help a café with social media content and review analysis — no code required." }
+  ],
+  3: [
+    { q: "What does Chapter 3 identify as the biggest mistake beginners make with AI?", opts: ["Using too many tools at once", "Waiting until they feel completely ready before starting", "Spending too much on AI subscriptions", "Sharing outputs publicly"], ans: 1, exp: "Correct. Waiting for the 'perfect moment' is the primary trap. Start immediately with imperfect experiments." },
+    { q: "What is wrong with treating AI like a search engine?", opts: ["It makes AI slower", "It underuses AI's potential for analysis, creation, and brainstorming", "It is actually recommended for beginners", "It costs more money"], ans: 1, exp: "Right. AI is a thinking partner, not just a lookup tool. Using it only for facts wastes its real value." },
+    { q: "According to Chapter 3, what should you do with AI-generated outputs?", opts: ["Publish them immediately", "Delete them if not perfect", "Review, refine, and apply your own judgment", "Always ask AI to redo them"], ans: 2, exp: "Correct! Your human judgment is what turns AI output into something genuinely valuable." }
+  ],
+  4: [
+    { q: "What is the key technique for using AI as an active learning mentor?", opts: ["Accepting the first response and moving on", "Active dialogue — pushing back, asking follow-ups, testing your understanding", "Only using AI to summarize textbooks", "Limiting sessions to 5 minutes"], ans: 1, exp: "Right! Active dialogue transforms AI from a passive answer machine into a genuine learning partner." },
+    { q: "How can you use AI to test your own understanding of a topic?", opts: ["Ask it to write an essay for you", "Ask it to quiz you, challenge your ideas, and point out gaps", "Ask it to give you a score", "Ask it to compare you to other students"], ans: 1, exp: "Exactly. Asking AI to quiz and challenge you is one of the most powerful learning techniques in the book." },
+    { q: "What does Lina's case study in Chapter 4 demonstrate?", opts: ["You need formal courses before using AI for learning", "Consistent daily practice with AI can compress months of study into weeks", "AI learning only works for technical subjects", "AI tutoring is less effective than classroom teaching"], ans: 1, exp: "Correct! Lina's story shows consistent AI-assisted practice dramatically accelerates skill acquisition." }
+  ],
+  5: [
+    { q: "What are the 5 core AI skills identified in Chapter 5?", opts: ["Coding, Design, Marketing, Finance, HR", "Research, Idea Generation, Content Creation, Problem Solving, Communication", "Automation, Analysis, Programming, Networking, Sales", "Prompting, Training, Deploying, Testing, Monitoring"], ans: 1, exp: "Correct! These 5 skills apply universally across all industries and roles." },
+    { q: "What makes AI-assisted content creation truly professional?", opts: ["Using the most expensive AI tool", "Letting AI write everything without editing", "Your voice, judgment, and understanding of your audience", "Generating as much content as possible"], ans: 2, exp: "Right! Content creation with AI is a collaboration — your human perspective elevates the output." },
+    { q: "What did Alex's case study in Chapter 5 demonstrate?", opts: ["AI skills require a computer science background", "Combining research and marketing skills with AI created a portfolio that opened freelance opportunities", "You need 2+ years of experience first", "AI skills only work in large companies"], ans: 1, exp: "Exactly. Even early-stage AI skills applied to real projects can directly open doors to freelance work and income." }
+  ]
+};
+
+let userAnswers={1:{},2:{},3:{},4:{},5:{}};
+let submitted={1:false,2:false,3:false,4:false,5:false};
+let scores={1:0,2:0,3:0,4:0,5:0};
+
+function checkAccess(){
+  const name=document.getElementById('input-name').value.trim();
+  const email=document.getElementById('input-email').value.trim().toLowerCase();
+  const code=document.getElementById('input-code').value.trim().toUpperCase();
+  const err=document.getElementById('error-msg');
+  if(!name||!email||!code){err.style.display='block';err.textContent='⚠ Please fill in all fields.';return;}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){err.style.display='block';err.textContent='⚠ Please enter a valid email address.';return;}
+  if(registeredEmails.has(email)){err.style.display='block';err.textContent='⚠ This email is already registered. Each email can only access the system once.';return;}
+  if(code!==VALID_CODE){err.style.display='block';err.textContent='⚠ Invalid purchase code. Please check the first page of your ebook.';return;}
+  registeredEmails.add(email);
+  document.getElementById('welcome-name').innerHTML=`Welcome, <strong>${name}</strong>. Complete each chapter quiz to unlock the next one.`;
+  document.getElementById('screen-access').classList.remove('active');
+  document.getElementById('screen-learn').classList.add('active');
+  buildNav(); renderQuiz(1);
+}
+
+function buildNav(){
+  document.getElementById('chapter-nav').innerHTML=
+    ['Ch. 1','Ch. 2','Ch. 3','Ch. 4','Ch. 5'].map((l,i)=>
+      `<button class="ch-btn${i===0?' active':' locked'}" id="nav${i+1}" onclick="tryGo(${i+1})">${l}</button>`
+    ).join('');
+}
+
+function tryGo(n){ if(n===1||submitted[n-1]) goChapter(n); }
+
+function goChapter(n){
+  document.querySelectorAll('.chapter-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ch-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('ch'+n).classList.add('active');
+  const nb=document.getElementById('nav'+n);
+  nb.classList.remove('locked'); nb.classList.add('active');
+  if(!document.getElementById('quiz'+n).innerHTML) renderQuiz(n);
+  updateProg();
+}
+
+function showComplete(){
+  document.querySelectorAll('.chapter-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('ch-complete').classList.add('active');
+  document.getElementById('total-score-num').textContent=Object.values(scores).reduce((a,b)=>a+b,0)+'/15';
+}
+
+function renderQuiz(ch){
+  document.getElementById('quiz'+ch).innerHTML=quizData[ch].map((q,qi)=>`
+    <div class="question">
+      <div class="q-text">${qi+1}. ${q.q}</div>
+      <div class="q-options">${q.opts.map((o,oi)=>`
+        <div class="q-opt" id="opt${ch}_${qi}_${oi}" onclick="pick(${ch},${qi},${oi})">
+          <span class="opt-letter">${['A','B','C','D'][oi]}</span><span>${o}</span>
+        </div>`).join('')}
+      </div>
+      <div class="feedback" id="fb${ch}_${qi}"></div>
+    </div>`).join('');
+}
+
+function pick(ch,qi,oi){
+  if(submitted[ch])return;
+  userAnswers[ch][qi]=oi;
+  document.querySelectorAll(`[id^="opt${ch}_${qi}_"]`).forEach((el,i)=>el.classList.toggle('selected',i===oi));
+  document.getElementById('sub'+ch).disabled=Object.keys(userAnswers[ch]).length!==quizData[ch].length;
+}
+
+function submitQuiz(ch){
+  if(submitted[ch])return;
+  submitted[ch]=true;
+  let correct=0;
+  quizData[ch].forEach((q,qi)=>{
+    const chosen=userAnswers[ch][qi];
+    document.querySelectorAll(`[id^="opt${ch}_${qi}_"]`).forEach((el,i)=>{
+      el.classList.remove('selected');
+      if(i===q.ans) el.classList.add('correct');
+      else if(i===chosen&&chosen!==q.ans) el.classList.add('wrong');
+    });
+    const fb=document.getElementById(`fb${ch}_${qi}`);
+    fb.classList.add('show');
+    if(chosen===q.ans){correct++;fb.classList.add('ok');fb.textContent='✓ '+q.exp;}
+    else{fb.classList.add('bad');fb.textContent='✗ '+q.exp;}
+  });
+  scores[ch]=correct;
+  const pct=Math.round(correct/quizData[ch].length*100);
+  const sc=document.getElementById('score'+ch);
+  sc.style.display='block';
+  sc.innerHTML=`<strong>${pct===100?'🎉 Perfect score!':pct>=67?'✓ Good work!':'📖 Review the insights above.'}</strong> You got ${correct} of ${quizData[ch].length} correct (${pct}%).`;
+  document.getElementById('sub'+ch).disabled=true;
+  document.getElementById('next'+ch).style.display='inline-block';
+  if(ch<5){
+    const nb=document.getElementById('nav'+(ch+1));
+    nb.classList.remove('locked');
+    document.getElementById('nav'+ch).classList.remove('active');
+    document.getElementById('nav'+ch).classList.add('done');
+  }
+  updateProg();
+}
+
+function updateProg(){
+  document.getElementById('prog-fill').style.width=(Object.values(submitted).filter(Boolean).length/5*100)+'%';
+}
+</script>
+</body>
+</html>
